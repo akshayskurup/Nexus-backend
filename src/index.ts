@@ -4,7 +4,8 @@ import session from "express-session";
 import cors from "cors";
 import connectDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
-import adminRoutes from "./routes/adminRoutes"
+import adminRoutes from "./routes/adminRoutes";
+import postRoutes from "./routes/postRoutes";
 import { errorHandler } from "./middleware/errorHandling";
 
 dotenv.config();
@@ -40,6 +41,7 @@ declare module "express-session" {
 
 app.use('/api/user',userRoutes )
 app.use('/api/admin',adminRoutes )
+app.use('/api/post',postRoutes)
 app.use(errorHandler)
 
 app.listen(port,()=>{

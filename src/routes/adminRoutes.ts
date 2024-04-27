@@ -6,4 +6,5 @@ const router = express.Router()
 router.post('/login',login)
 router.get('/all-users',getAllUsers)
 router.post('/change-user-status',adminVerifyToken,authorizeRole("admin"),changeUserStatus)
+
 export default router

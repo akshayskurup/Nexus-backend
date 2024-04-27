@@ -167,7 +167,7 @@ export const login = expressAsyncHandler(async(req:Request,res:Response)=>{
     }
 
     const accessToken = generateToken(user?._id, "user");
-    const refreshToken = jwt.sign({ userId: user?._id, role:"user" }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '30d' });
+    const refreshToken = jwt.sign({ userId: user?._id, role:"user" }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '10d' });
 
     res.status(200).json({message:"Login Successful",
     _id: user.id,
@@ -191,8 +191,6 @@ export const login = expressAsyncHandler(async(req:Request,res:Response)=>{
 
 export const accountSetup = expressAsyncHandler(async(req:Request,res:Response)=>{
     const {userName,bio,phone,profileImage,bgImage,gender,userId} = req.body;
-    console.log("req.body",req.user?.userId)
-    console.log(req.body)
     const user = await findUsername(userName);
     if (!user) {
         const updatedUser = await update(userId,{userName,bio,phone,gender,bgImage,profileImage})
@@ -206,21 +204,26 @@ export const accountSetup = expressAsyncHandler(async(req:Request,res:Response)=
 //@desc     Refresh token
 //@route    /user/refresh-token
 export const refreshTokenHandler = expressAsyncHandler(async(req:Request,res:Response)=>{
+    console.log("Refresj tokem works");
+    
     const refreshToken = req.body.refreshToken;
     if (!refreshToken) {
         res.status(401);
         throw new Error('Refresh token is required');
     }
-    try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { userId: string };
+        if(!decoded){
+            res.status(401);
+            throw new Error('Invalid refresh token');
+        }
         const userId = decoded.userId;
         // const user = await getUserDetails(userId);
         // Generate new access token based on user role
         const accessToken = generateToken(userId, "user");
-
         res.status(200).json({ accessToken });
-    } catch (error) {
-        res.status(401);
-        throw new Error('Invalid refresh token');
-    }
+    
 });
+
+
+
+
