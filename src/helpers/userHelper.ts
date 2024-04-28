@@ -28,6 +28,16 @@ export const findByEmail = async(email:string)=>{
     }
 }
 
+export const findById = async(id:any)=>{
+    try {
+        const user = await User.findById(id);
+        return user
+    } catch (error:any) {
+        console.log(error)
+        throw new Error(`Error finding user by email: ${error.message}`)
+    }
+}
+
 export const update = async(userId:any,updateField:any)=>{
     try {
         const updatedUser = await User.findByIdAndUpdate(userId, { $set: updateField },{new:true});
@@ -50,5 +60,28 @@ export const findUsername = async(userName:string)=>{
         return null;
     } catch (error:any) {
         throw new Error(`Error finding user: ${error.message}`);
+    }
+}
+
+export const postSave = async(user:any,postId:any)=>{
+    try {
+        const isSaved = user.savedPost.includes(postId);
+        if(isSaved){
+        await User.findOneAndUpdate(
+            {_id:user._id},
+            {$pull:{savedPost:postId}},
+            {new:true}
+        )
+        return user;
+        }else{
+            await User.findOneAndUpdate(
+                {_id:user._id},
+                {$push:{savedPost:postId}},
+                {new:true}
+            )
+        return user;
+        }
+    } catch (error:any) {
+        throw new Error(`Error in savepost: ${error.message}`);
     }
 }

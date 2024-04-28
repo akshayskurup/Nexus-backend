@@ -1,5 +1,6 @@
 import { Request } from "express";
 import Post from "../models/postModel";
+import Report from "../models/reportModel";
 
 
 export const createPost = async(description:string,userId:string,image?:string)=>{
@@ -66,6 +67,20 @@ export const getUserPost = async(userId:any)=>{
     }
 }
 
+export const getSavedPost = async(user:any)=>{
+    try {
+        const savedPosts = await Post.find({
+            _id: { $in: user.savedPost},
+            isBlocked:false
+        }).populate("userId");
+        return savedPosts;
+    } catch (error:any) {
+        console.log(error)
+        throw new Error(`Error during getUserPost: ${error.message}`);
+    }
+}
+
+
 export const postEdit = async(userId:any,postId:any,description:string)=>{
     try {
        const post = await Post.findById(postId);
@@ -81,3 +96,21 @@ export const postEdit = async(userId:any,postId:any,description:string)=>{
         throw new Error(`Error during getUserPost: ${error.message}`);
     }
 }
+
+export const report = async(userId:any,postId:any,reason:string)=>{
+    try {
+       const post = await Post.findById(postId);
+       if(post){
+           const report = await Report.create({
+            userId,
+            postId,
+            reason
+           })
+           return report
+       }
+    } catch (error:any) {
+        console.log(error)
+        throw new Error(`Error during getUserPost: ${error.message}`);
+    }
+}
+
