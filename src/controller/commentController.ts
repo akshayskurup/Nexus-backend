@@ -1,7 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
 import { NextFunction, Request, Response } from "express";
 import { formatDistanceToNow } from 'date-fns';
-import { createNewComment, deleteComment, getAllComments, getMyComment } from "../helpers/commentHelper";
+import { addReply, createNewComment, deleteComment, findComment, getAllComments, getMyComment } from "../helpers/commentHelper";
+import { findPost } from "../helpers/postHelper";
+import { timeStamp } from "console";
 
 // @desc    Add Comment
 // @route   /post/add-comment
@@ -59,6 +61,33 @@ export const commentsCount = expressAsyncHandler(async (req: Request, res: Respo
     
     res.status(200).json({ message: "Comment fetched", totalComment });
 });
+
+// @desc    Reply Comment
+// @route   /post/reply-comment
+
+export const replyComment = expressAsyncHandler(async (req: Request, res: Response) => { 
+    const {userId,commentId,reply} = req.body;
+    const comment = await findComment(commentId);
+    if(!comment){
+        res.status(400)
+        throw new Error("Comment not found");
+    }
+    const newReply = {
+        userId,
+        reply,
+        timeStamp: new Date()
+    }
+    const Reply = await addReply(comment,newReply)
+    if(!Reply){
+        res.status(400)
+        throw new Error("Can't reply at this moment !");
+    }
+
+    res.status(200).json({ message: "Reply comment added "});
+
+
+})
+
 
 // @desc    Delete Comment
 // @route   /post/delete-comment

@@ -1,8 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
 import Admin from "../models/adminModel";
 import { Request, Response } from "express";
-import { changeStatus, fetchAllUsers, findAdminByEmail } from "../helpers/adminHelper";
+import { changeStatus, fetchAllReportedPost, fetchAllUsers, findAdminByEmail } from "../helpers/adminHelper";
 import { generateToken } from "../utils/generateToken";
+import { changePostStatus } from "../helpers/postHelper";
 
 // @desc    Admin Login
 // @route   /admin/login
@@ -41,7 +42,7 @@ export const getAllUsers = expressAsyncHandler(async(req:Request,res:Response)=>
 })
 
 // @desc    Block/Unblock Users
-// @route   /admin/block-unblock
+// @route   /admin/change-user-status
 
 export const changeUserStatus =expressAsyncHandler(async(req:Request,res:Response)=>{
     const {userId,status} = req.body;
@@ -51,6 +52,34 @@ export const changeUserStatus =expressAsyncHandler(async(req:Request,res:Respons
         res.status(400)
         throw new Error("No user found")
     }
-    res.status(200).json({message:"Successfully Updated",user});
+    res.status(200).json({message:"Successfully Updated",users:await fetchAllUsers()});
+
+})
+
+// @desc    Get Posts
+// @route   /admin/all-posts
+
+export const getAllPosts = expressAsyncHandler(async(req:Request,res:Response)=>{
+    const allPosts = await fetchAllReportedPost();
+    if(!allPosts){
+        res.status(400)
+        throw new Error("No posts")
+    }
+    res.status(200).json({message:"Successfully fetched all the post",allPosts});
+
+})
+
+// @desc    Block/Unblock Post
+// @route   /admin/change-post-status
+
+export const changeReportPostStatus =expressAsyncHandler(async(req:Request,res:Response)=>{
+    const {postId,status} = req.body;   
+    
+    const post = await changePostStatus(postId,status);
+    if(!post){
+        res.status(400)
+        throw new Error("No post found")
+    }
+    res.status(200).json({message:"Successfully Updated",post:await fetchAllReportedPost()});
 
 })

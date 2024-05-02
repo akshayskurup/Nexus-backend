@@ -39,6 +39,8 @@ export const findById = async(id:any)=>{
 }
 
 export const update = async(userId:any,updateField:any)=>{
+    console.log("updateField",updateField);
+    
     try {
         const updatedUser = await User.findByIdAndUpdate(userId, { $set: updateField },{new:true});
         if (!updatedUser) {
@@ -67,19 +69,19 @@ export const postSave = async(user:any,postId:any)=>{
     try {
         const isSaved = user.savedPost.includes(postId);
         if(isSaved){
-        await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
             {_id:user._id},
             {$pull:{savedPost:postId}},
             {new:true}
         )
-        return user;
+        return updatedUser;
         }else{
-            await User.findOneAndUpdate(
+          const updatedUser = await User.findOneAndUpdate(
                 {_id:user._id},
                 {$push:{savedPost:postId}},
                 {new:true}
             )
-        return user;
+        return updatedUser;
         }
     } catch (error:any) {
         throw new Error(`Error in savepost: ${error.message}`);

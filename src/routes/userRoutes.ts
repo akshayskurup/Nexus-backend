@@ -1,6 +1,6 @@
 import express from "express"
 const router = express.Router()
-import{accountSetup, forgetOTP, forgetPassword, login, refreshTokenHandler, registration,resendOTP,resetPassword,verifyOTP} from '../controller/userController'
+import{accountSetup, editProfile, forgetOTP, forgetPassword, login, refreshTokenHandler, registration,resendOTP,resetPassword,userProfile,verifyOTP} from '../controller/userController'
 import { authorizeRole, verifyToken } from "../middleware/verifyToken";
 
 
@@ -12,6 +12,8 @@ router.post('/forget-otp',forgetOTP);
 router.post('/reset-password',resetPassword);
 router.post('/login',login);
 router.post('/account-setup',verifyToken,authorizeRole('user'),accountSetup);
+router.post('/edit-profile',verifyToken,authorizeRole('user'),editProfile);
+router.get('/user-profile/:userId',userProfile)
 router.post('/refresh-token', refreshTokenHandler);
 
 
