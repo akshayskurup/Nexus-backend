@@ -9,7 +9,7 @@ const reportSchema = new Schema({
     },
     postId:{
         type:Schema.Types.ObjectId,
-        ref:"products",
+        ref:"posts",
         required:true
     },
     reason:{

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
-import { createPost, getAllPost, getSavedPost, getUserPost, postEdit, postLike, report } from "../helpers/postHelper";
+import { createPost, findPost, getAllPost, getSavedPost, getUserPost, postDelete, postEdit, postLike, report } from "../helpers/postHelper";
 import { findByEmail, findById, postSave } from "../helpers/userHelper";
 
 //@desc   Add Post
@@ -13,7 +13,8 @@ export const addPost = expressAsyncHandler(async(req:Request,res:Response)=>{
         res.status(400)
         throw new Error("Cannot add post");
     }
-    res.status(200).json({message:"Post Uploaded Successfully",newPost});
+    const post = await getAllPost();
+    res.status(200).json({message:"Post Uploaded Successfully",post});
 });
 
 //@desc   Get Post
@@ -39,7 +40,9 @@ export const likePost = expressAsyncHandler(async(req:Request,res:Response)=>{
         res.status(400);
         throw new Error("Post not found");
     }
-    const posts = await getUserPost(userId);
+    const posts = await getAllPost();
+    console.log("Postss",posts);
+    
     res.status(200).json({message:"Successfully liked",posts});
 });
 
@@ -79,9 +82,18 @@ export const savedPost = expressAsyncHandler(async(req:Request,res:Response)=>{
     const {userId,postId} = req.body;
     
     const user = await findById(userId);
+    if(user?.isBlocked){
+        res.status(400);
+        throw new Error("User is Blocked");
+    }
     if(!user){
         res.status(400);
         throw new Error("User not found");
+    }
+    const post = await findPost(postId)
+    if(post?.isBlocked){
+        res.status(400)
+        throw new Error("This post is unavailable");
     }
     const updatedUser = await postSave(user,postId);
     if(!updatedUser){
@@ -118,4 +130,28 @@ export const userSavedPost = expressAsyncHandler(async(req:Request,res:Response)
     }
     const savedposts = await getSavedPost(user);
     res.status(200).json({message:"Successfully fetched",savedposts});
+});
+
+//@desc   Delete Post
+//@route  /post/delete-post
+
+export const deletePost = expressAsyncHandler(async(req:Request,res:Response)=>{
+    const postId = req.params.postId;    
+    console.log("post",postId);
+    
+    const post = await findPost(postId);
+    if(!post){
+        res.status(400);
+        throw new Error("Post not found");
+    }
+    console.log("Post",post);
+    
+    const updatedPost = await postDelete(postId);
+    if(!updatedPost){
+        res.status(400);
+        throw new Error("Post didn't delete properly");
+    }
+    console.log(updatedPost);
+    
+    res.status(200).json({message:"Successfully Post Saved",updatedPost});
 });

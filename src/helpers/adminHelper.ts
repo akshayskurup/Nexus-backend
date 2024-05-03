@@ -2,6 +2,8 @@ import bcrypt from "bcrypt"
 import Admin from "../models/adminModel";
 import { Request } from "express";
 import User from "../models/userModel";
+import Post from "../models/postModel";
+import Report from "../models/reportModel";
 
 
 export const findAdminByEmail = async(email:string)=>{
@@ -37,5 +39,18 @@ export const changeStatus = async(userId:string,status:boolean)=>{
     } catch (error:any) {
         console.log(error)
         throw new Error(`Error in changeStatus: ${error.message}`)
+    }
+}
+
+export const fetchAllReportedPost = async()=>{
+    try {
+        const posts = await Report.find().populate("postId").populate("userId");
+        if(!posts){
+            return null
+        }
+        return posts
+    } catch (error:any) {
+        console.log(error)
+        throw new Error(`Error finding all Posts: ${error.message}`)
     }
 }

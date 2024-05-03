@@ -2,6 +2,7 @@
 
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { findById } from '../helpers/userHelper';
 
 interface UserPayload {
   userId?: string,
@@ -14,7 +15,7 @@ declare module 'express' {
     }
   }
 
-export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyToken = async(req: Request, res: Response, next: NextFunction) => {
   const authorizationHeader = req.headers['authorization'];
 console.log("Chceking");
 
@@ -24,13 +25,14 @@ console.log("Chceking");
   }
 
   const token = authorizationHeader.split(' ')[1];  
-  jwt.verify(token, process.env.JWT_SECRET as string, (err:any, decoded:any) => {
+  
+   jwt.verify(token, process.env.JWT_SECRET as string, async(err:any, decoded:any) => {
     
 
-    if (decoded.exp && Date.now() >= decoded.exp * 1000) {
-      res.status(401); 
-      throw new Error('Token expired');
-    }
+    // if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+    //   res.status(401); 
+    //   throw new Error('Token expired');
+    // }
     if (err) {
       console.log(err);
         res.status(400);
@@ -43,6 +45,14 @@ console.log("Chceking");
     }
 
     req.user = decoded;
+    const user = await findById(decoded.userId)
+    console.log("ISe",user)
+    if(user?.isBlocked){
+      // res.status(400);
+      // throw new Error('User is Blocked' );
+      return res.status(400).json({ message: "User is blocked" });
+
+    }
     next();
   });
 };

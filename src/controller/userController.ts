@@ -4,8 +4,9 @@ import otpGenerator from 'otp-generator';
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken';
 import { sendVerifyMail } from "../utils/sendVerifyMail";
-import { findByEmail, findUsername, registerUser, update } from "../helpers/userHelper";
+import { findByEmail, findById, findUsername, registerUser, update } from "../helpers/userHelper";
 import { generateToken } from "../utils/generateToken";
+import { userPost } from "./postController";
 
 
 //@des    Register user
@@ -191,8 +192,11 @@ export const login = expressAsyncHandler(async(req:Request,res:Response)=>{
 
 export const accountSetup = expressAsyncHandler(async(req:Request,res:Response)=>{
     const {userName,bio,phone,profileImage,bgImage,gender,userId} = req.body;
+    console.log("REq",req.body);
+    
     const user = await findUsername(userName);
     if (!user) {
+        console.log("inside null",userId)
         const updatedUser = await update(userId,{userName,bio,phone,gender,bgImage,profileImage})
         res.status(200).json({message:"Successfully completed account setup",updatedUser})
     }else{
@@ -200,6 +204,73 @@ export const accountSetup = expressAsyncHandler(async(req:Request,res:Response)=
         throw new Error('UserName already exist');
     }
 })
+
+//@desc     Get user profile
+//@route    /user/user-profile
+
+export const userProfile = expressAsyncHandler(async (req: Request, res: Response) => {
+        const userId = req.params.userId;
+        console.log(userId);
+        
+        const user = await findById(userId);
+        if (!user) {
+            res.status(400);
+            throw new Error('User not found');
+        }
+        res.status(200).json({message:"Successfully fetched",user})
+    
+});
+
+//@desc     edit profile
+//@route    user/edit-profile
+
+export const editProfile = expressAsyncHandler(async(req:Request,res:Response)=>{
+    const {userName,bio, profileImage, bgImage,userId} = req.body;
+    console.log("req.bodyyy",req.body);
+    console.log("req.userr",req.user);
+    if(req.user||userId){
+        const User = await findById(userId?userId:req.user?.userId);
+    
+    if (!User) {
+        res.status(400);
+        throw new Error('User not found');
+    }else{
+        if(userName){
+            const existingUserName = await findUsername(userName)
+            if (existingUserName) {
+                res.status(400);
+                throw new Error('UserName already exist');
+            }
+            await update(userId,{userName})  
+        } 
+            if(bio) await update(userId,{bio})
+                if(profileImage) await update(userId,{profileImage})
+                    if(bgImage) await update(userId,{bgImage})
+        
+    }
+    const user = await findById(userId?userId:req.user?.userId);
+    const accessToken = generateToken(user?._id, "user");
+    const refreshToken = jwt.sign({ userId: user?._id, role:"user" }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '10d' });
+
+    res.status(200).json({message:"Successful",
+    _id: user?.id,
+      userName: user?.userName,
+      email: user?.email,
+      profileImage: user?.profileImage,
+      bgImage: user?.bgImage,
+      savedPost: user?.savedPost,
+      bio: user?.bio,
+      phone: user?.phone,
+      name: user?.name,
+      isBlocked:user?.isBlocked,
+      token:accessToken,
+      refreshToken
+
+    })
+    }
+});
+
+
 
 //@desc     Refresh token
 //@route    /user/refresh-token
@@ -221,7 +292,6 @@ export const refreshTokenHandler = expressAsyncHandler(async(req:Request,res:Res
         // Generate new access token based on user role
         const accessToken = generateToken(userId, "user");
         res.status(200).json({ accessToken });
-    
 });
 
 
