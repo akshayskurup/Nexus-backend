@@ -140,13 +140,32 @@ export const report = async(userId:any,postId:any,reason:string)=>{
     try {
        const post = await Post.findById(postId);
        if(post){
+        const existingReport = await Report.findOne({userId:userId,postId:postId})
+        if(existingReport){
+            existingReport.reason.push(reason);
+            await existingReport.save();
+            return existingReport;
+        }else{
            const report = await Report.create({
             userId,
             postId,
             reason
            })
+           const totalReports = await Report.countDocuments({ postId: postId });
+    
+            if (totalReports > 3) {
+                const post = await Post.findById(postId);
+                if(post){
+                    post.isBlocked = true;
+                    await post.save();
+                    console.log("Post after blocking",post);
+                }
+                
+            }
            return report
        }
+    }
+    
     } catch (error:any) {
         console.log(error)
         throw new Error(`Error during getUserPost: ${error.message}`);

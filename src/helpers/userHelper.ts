@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import User from "../models/userModel";
 import { Request } from "express";
+import Connection from "../models/connectionModel";
 
 export const registerUser = async(req:Request)=>{
     try {
@@ -10,7 +11,10 @@ export const registerUser = async(req:Request)=>{
             email:userData?.email,
             password:userData?.password
         });
-        await newUser.save()
+        const NewUser = await newUser.save()
+        await Connection.create({
+            userId: NewUser._id,
+          });
         return newUser;
     } catch (error) {
         console.error("Error registering user:", error);

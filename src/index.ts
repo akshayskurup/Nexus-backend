@@ -6,6 +6,7 @@ import connectDB from "./config/db";
 import userRoutes from "./routes/userRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import postRoutes from "./routes/postRoutes";
+import connectionRoutes from './routes/connectionRoutes';
 import { errorHandler } from "./middleware/errorHandling";
 
 dotenv.config();
@@ -39,9 +40,10 @@ declare module "express-session" {
     }
 }
 
-app.use('/api/user',userRoutes )
-app.use('/api/admin',adminRoutes )
-app.use('/api/post',postRoutes)
+app.use('/api/user',userRoutes );
+app.use('/api/admin',adminRoutes );
+app.use('/api/post',postRoutes);
+app.use('/api/connection',connectionRoutes)
 app.use(errorHandler)
 
 app.listen(port,()=>{
