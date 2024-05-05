@@ -13,7 +13,7 @@ const reportSchema = new Schema({
         required:true
     },
     reason:{
-        type:String,
+        type:Array,
         require:true
     }
 

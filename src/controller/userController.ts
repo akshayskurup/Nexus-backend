@@ -7,6 +7,7 @@ import { sendVerifyMail } from "../utils/sendVerifyMail";
 import { findByEmail, findById, findUsername, registerUser, update } from "../helpers/userHelper";
 import { generateToken } from "../utils/generateToken";
 import { userPost } from "./postController";
+import { getUserConnections } from "../helpers/connectionHelper";
 
 
 //@des    Register user
@@ -217,7 +218,8 @@ export const userProfile = expressAsyncHandler(async (req: Request, res: Respons
             res.status(400);
             throw new Error('User not found');
         }
-        res.status(200).json({message:"Successfully fetched",user})
+        const connections = await getUserConnections(userId)
+        res.status(200).json({message:"Successfully fetched",user,connections})
     
 });
 
