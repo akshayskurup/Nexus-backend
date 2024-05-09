@@ -27,12 +27,6 @@ console.log("Chceking");
   const token = authorizationHeader.split(' ')[1];  
   
    jwt.verify(token, process.env.JWT_SECRET as string, async(err:any, decoded:any) => {
-    
-
-    // if (decoded.exp && Date.now() >= decoded.exp * 1000) {
-    //   res.status(401); 
-    //   throw new Error('Token expired');
-    // }
     if (err) {
       console.log(err);
         res.status(400);
@@ -46,7 +40,6 @@ console.log("Chceking");
 
     req.user = decoded;
     const user = await findById(decoded.userId)
-    console.log("ISe",user)
     if(user?.isBlocked){
       // res.status(400);
       // throw new Error('User is Blocked' );
