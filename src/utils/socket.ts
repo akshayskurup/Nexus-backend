@@ -40,6 +40,33 @@ const socketConfig = (io: any) => {
         console.log("ioTp",senderId,text,user?.socketId)
     })
 
+
+    //video call
+    socket.on("videoCallRequest",(data:any)=>{
+      console.log("Received videoCallRequest:", data);
+      const emitData = {
+        roomId: data.roomId,
+        senderName : data.senderName,
+        senderProfile: data.senderProfile
+      }
+      const user = getUser(data.receiverId)
+      if(user){
+        io.to(user.socketId).emit("VideoCallResponse",emitData);
+      }
+    })
+
+    socket.on("AudioCallRequest",(data:any)=>{
+      const emitData = {
+        roomId: data.roomId,
+        senderName : data.senderName,
+        senderProfile: data.senderProfile
+      }
+      const user = getUser(data.receiverId)
+      if(user){
+        io.to(user.socketId).emit("AudioCallResponse",emitData);
+      }
+    })
+
      // When disconnectec
      socket.on("disconnect", () => {
         removeUser(socket.id);
