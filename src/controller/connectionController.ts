@@ -38,8 +38,26 @@ export const unFollow = expressAsyncHandler(async(req:Request,res:Response)=>{
 export const getConnectionController = expressAsyncHandler(
     async (req: Request, res: Response) => {
       const { userId } = req.body;
-      console.log(userId +"hello");
+      
       const connection = await getUserConnections(userId)
       res.status(200).json({ connection });
     }
   );
+
+  
+// @desc    Get User Friends(a person who follow him and he followbacks)
+// @route   /connection/get-friends
+
+// export const getFriends = expressAsyncHandler(
+//     async (req: Request, res: Response) => {
+//       const userId = req.params.userId;
+      
+//       const friends = await getUserFriends(userId)
+//       if(!friends){
+//         res.status(400);
+//         throw new Error("User has no connection");
+//       }
+//       console.log("friends",friends)
+//       res.status(200).json({ friends });
+//     }
+//   );

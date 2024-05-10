@@ -50,3 +50,24 @@ import { findById } from "./userHelper";
         }
     }
     
+    // export const getUserFriends = async(userId:any)=>{
+    //     try {
+    //         console.log(userId)
+    //         const user = await Connection.findOne({userId})
+    //         if(user){
+    //             console.log("userss",user.followers)
+    //             const followers = user.followers
+    //             const following = user.following
+    //             const data = {followers:followers,following:following}
+    //             const friends = []
+    //             followers.map((user:any)=>{
+    //                 following.some((followingUser)=>followingUser===user)
+    //             })
+    //             return data
+    //         }
+            
+    //     } catch (error:any) {
+    //         console.log(error);
+    //         throw new Error(`Error during getUSerFriends: ${error.message}`);
+    //     }
+    // }
