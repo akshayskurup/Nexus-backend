@@ -96,3 +96,19 @@ export const getConversationOfTwoUsers = async (user1: string, user2: string) =>
     );
   }
 };
+
+export const fetchLastMessage = async(conversationId:string)=>{
+  try {
+    const lastMessage = await Message.findOne({ conversationId })
+      .sort({ createdAt: -1 }) // Sort messages by createdAt field in descending order
+      .limit(1);
+      if(lastMessage){
+        return lastMessage
+      }else{
+        console.log("No last messags")
+      }
+  } catch (error) {
+    
+  }
+
+}

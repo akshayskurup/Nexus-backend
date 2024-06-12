@@ -91,3 +91,40 @@ export const postSave = async(user:any,postId:any)=>{
         throw new Error(`Error in savepost: ${error.message}`);
     }
 }
+
+export const searchUser = async (search: string) => {
+    try {
+        const users = await User.find({ userName: { $regex: `^${search}`, $options: 'i' } });
+        return users;
+    } catch (error) {
+        throw new Error('Error searching users');
+    }
+}
+
+export const allUsers = async()=>{
+    try {
+        const allUsers = await User.find({})
+        return allUsers;
+    } catch (error) {
+        throw new Error('Error getting users');
+    }
+}
+
+export const getUserSuggestion = async(followingIds:any)=>{
+    try {
+        const usersExceptFollowed = await User.find(
+            { 
+              _id: { $nin: followingIds }, // Exclude users already followed
+              userName: { $exists: true } // Ensure users have a userName field
+            }
+          );        if(!usersExceptFollowed){
+            console.log("Something went wrong in getUserSuggestion")
+            return null
+        }
+        return usersExceptFollowed;
+    } catch (error) {
+        throw new Error('Error getting users');
+        
+    }
+    
+}

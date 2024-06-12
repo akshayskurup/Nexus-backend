@@ -32,6 +32,17 @@ export const getAllPost = async()=>{
     
 }
 
+// export const findPost = async(postId:string)=>{
+//     try {
+//         const posts = await Post.find({_id:postId,isDeleted:false,isBlocked:false}).populate("userId").sort({date:-1});
+//         return posts;
+//     } catch (error:any) {
+//         console.log(error)
+//         throw new Error(`Error during fetching post: ${error.message}`);
+//     }
+    
+// }
+
 export const postLike = async(userId:any,postId:any)=>{
     try {
         const post = await Post.findById(postId);
@@ -90,7 +101,7 @@ export const findPost = async(postId:any)=>{
     try {
         console.log("inside findPost",postId);
         
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate('userId');
         if(!post){
             return null
         }

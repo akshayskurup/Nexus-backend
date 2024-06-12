@@ -4,7 +4,7 @@ import otpGenerator from 'otp-generator';
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken';
 import { sendVerifyMail } from "../utils/sendVerifyMail";
-import { findByEmail, findById, findUsername, registerUser, update } from "../helpers/userHelper";
+import { findByEmail, findById, findUsername, registerUser, searchUser, update } from "../helpers/userHelper";
 import { generateToken } from "../utils/generateToken";
 import { userPost } from "./postController";
 import { getUserConnections } from "../helpers/connectionHelper";
@@ -270,6 +270,23 @@ export const editProfile = expressAsyncHandler(async(req:Request,res:Response)=>
 
     })
     }
+});
+
+//@desc     Search user profile
+//@route    /user/search-user
+
+export const searchUserProfile = expressAsyncHandler(async (req: Request, res: Response) => {
+    const search = req.query.search as string;
+    console.log(search);
+    
+    const users = await searchUser(search);
+    if (!users) {
+        res.status(400);
+        throw new Error('User not found');
+    }
+    
+    res.status(200).json({message:"Successfully fetched",users})
+
 });
 
 

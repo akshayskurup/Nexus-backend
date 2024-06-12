@@ -55,6 +55,16 @@ const socketConfig = (io: any) => {
       }
     })
 
+    socket.on("GroupVideoCall",(data:any)=>{
+      const emitData = {
+        roomId: data.roomId,
+        groupName: data.groupName,
+        profile: data.groupProfile
+      }
+      console.log("Emiting group Video call",emitData)
+      io.to(data.groupId).emit("GroupVideoCallResponse",emitData)
+    })
+
     socket.on("AudioCallRequest",(data:any)=>{
       const emitData = {
         roomId: data.roomId,
@@ -67,6 +77,46 @@ const socketConfig = (io: any) => {
       }
     })
 
+    socket.on("GroupAudioCall",(data:any)=>{
+      console.log("Request receivedd",data)
+      const {groupId} = data;
+      const emitData = {
+        roomId: data.roomId,
+        groupName: data.groupName,
+        profile: data.groupProfile
+      }
+      io.to(groupId).emit("groupAudioCallResponse",emitData)
+      console.log("Emmiteddd successfully",emitData)
+
+    })
+
+    //group chat
+
+
+    socket.on("joinGroup", (data: any) => {
+      try {
+        const { groupId, userId } = data;
+        socket.join(groupId);
+        console.log("Connected to the group", groupId, "by user", userId);
+        socket
+          .to(groupId)
+          .emit("joinGroupResponse", {
+            message: "Successfully joined the group",
+          });
+          console.log("Successfully joined the group")
+          console.log("Checking for rooms",socket.rooms);
+
+      } catch (error) {
+        console.error("Error occurred while joining group:", error);
+      }
+    });
+
+    socket.on("sendGroupMessage",(data:any)=>{
+      const {groupId,sender,text} = data;
+      io.to(groupId).emit("getGroupMessages",data)
+      console.log("Emitted groupmess",data)
+    })
+    
      // When disconnectec
      socket.on("disconnect", () => {
         removeUser(socket.id);

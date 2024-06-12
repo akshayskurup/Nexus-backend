@@ -4,16 +4,9 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { findById } from '../helpers/userHelper';
 
-interface UserPayload {
-  userId?: string,
-  role?: string
-}
 
-declare module 'express' {
-    interface Request {
-      user?: UserPayload; 
-    }
-  }
+
+
 
 export const verifyToken = async(req: Request, res: Response, next: NextFunction) => {
   const authorizationHeader = req.headers['authorization'];
@@ -39,6 +32,7 @@ console.log("Chceking");
     }
 
     req.user = decoded;
+    console.log("req.user",req.user)
     const user = await findById(decoded.userId)
     if(user?.isBlocked){
       // res.status(400);
