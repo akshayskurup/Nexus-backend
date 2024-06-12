@@ -3,6 +3,7 @@ import {
   addConversation,
   addMessage,
   findConversationOfTwoUsers,
+  getLastMessage,
   getMessage,
   getUserConversation,
 } from "../controller/chatController";
@@ -15,6 +16,7 @@ router.get("/find-conversation/:firstUserId/:secondUserId",findConversationOfTwo
 
 router.post("/add-message", addMessage);
 router.get("/get-messages/:conversationId", getMessage);
+router.get('/get-last-messages/:conversationId',getLastMessage)
 
 router.post("/add-group", addGroup);
 router.get("/get-groups/:userId", getGroups);

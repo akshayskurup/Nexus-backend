@@ -21,12 +21,27 @@ export const addPost = expressAsyncHandler(async(req:Request,res:Response)=>{
 //@route  /post/get-post
 
 export const getPost = expressAsyncHandler(async(req:Request,res:Response)=>{
+    console.log("req.user from post",req.user)
     const post = await getAllPost();
     if(!post){
         res.status(400);
         throw new Error("No post available");
     }
     res.status(200).json({message:"Fetched all Post successfully",post});
+});
+
+//@desc   Find Post
+//@route  /post/find-post
+
+export const getOnePost = expressAsyncHandler(async(req:Request,res:Response)=>{
+    console.log("Inside getOnePostttt")
+    const postId = req.params.postId;
+    const post = await findPost(postId);
+    if(!post){
+        res.status(400);
+        throw new Error("No post available");
+    }
+    res.status(200).json({message:"Fetched Post successfully",post});
 });
 
 //@desc   Like Post

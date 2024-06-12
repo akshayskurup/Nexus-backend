@@ -3,6 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import {
   addNewMessage,
   createConversation,
+  fetchLastMessage,
   fetchMessage,
   findConversation,
   findUserConversation,
@@ -91,5 +92,22 @@ export const getMessage = expressAsyncHandler(
       throw new Error("Error during adding new message");
     }
     res.status(200).json(newMessage);
+  }
+);
+
+// @desc    get user last messages
+// @route   /chat/get-last-messages
+
+export const getLastMessage = expressAsyncHandler(
+  async (req: Request, res: Response) => {
+    const conversationId = req.params.conversationId;
+    console.log("Covmersation",conversationId)
+    const lastMessage = await fetchLastMessage(conversationId);
+    if (!lastMessage) {
+      res.status(400);
+      throw new Error("Error during feting last message");
+    }
+    // console.log("last message",lastMessage)
+    res.status(200).json(lastMessage);
   }
 );

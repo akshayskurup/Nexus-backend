@@ -9,6 +9,7 @@ import adminRoutes from "./routes/adminRoutes";
 import postRoutes from "./routes/postRoutes";
 import connectionRoutes from "./routes/connectionRoutes";
 import chatRoutes from "./routes/chatRoutes";
+import assistantRoutes from "./routes/assistantRoutes"
 import { errorHandler } from "./middleware/errorHandling";
 import { Server } from "socket.io";
 import socketConfig from "./utils/socket";
@@ -27,6 +28,18 @@ declare module "express-session" {
     otp?: string;
     otpGeneratedTime?: number;
     email: string;
+    history: {
+      [key: string]: { role: string, parts: { text: string }[] }[]
+    };
+  }
+}
+interface UserPayload {
+  userId?: string,
+  role?: string
+}
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: UserPayload; 
   }
 }
 
@@ -77,6 +90,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/connection", connectionRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/assistant",assistantRoutes)
 app.use(errorHandler);
 
 server.listen(port, () => {

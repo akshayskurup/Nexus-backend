@@ -77,6 +77,19 @@ const socketConfig = (io: any) => {
       }
     })
 
+    socket.on("GroupAudioCall",(data:any)=>{
+      console.log("Request receivedd",data)
+      const {groupId} = data;
+      const emitData = {
+        roomId: data.roomId,
+        groupName: data.groupName,
+        profile: data.groupProfile
+      }
+      io.to(groupId).emit("groupAudioCallResponse",emitData)
+      console.log("Emmiteddd successfully",emitData)
+
+    })
+
     //group chat
 
 
@@ -90,6 +103,9 @@ const socketConfig = (io: any) => {
           .emit("joinGroupResponse", {
             message: "Successfully joined the group",
           });
+          console.log("Successfully joined the group")
+          console.log("Checking for rooms",socket.rooms);
+
       } catch (error) {
         console.error("Error occurred while joining group:", error);
       }
