@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const router = express_1.default.Router();
+const userController_1 = require("../controller/userController");
+const verifyToken_1 = require("../middleware/verifyToken");
+const connectionController_1 = require("../controller/connectionController");
+router.post('/register', userController_1.registration);
+router.post('/register-otp', userController_1.verifyOTP);
+router.post('/resend-otp', userController_1.resendOTP);
+router.post('/forget-password', userController_1.forgetPassword);
+router.post('/forget-otp', userController_1.forgetOTP);
+router.post('/reset-password', userController_1.resetPassword);
+router.post('/login', userController_1.login);
+router.post('/account-setup', verifyToken_1.verifyToken, (0, verifyToken_1.authorizeRole)('user'), userController_1.accountSetup);
+router.post('/edit-profile', verifyToken_1.verifyToken, (0, verifyToken_1.authorizeRole)('user'), userController_1.editProfile);
+router.get('/user-profile/:userId', userController_1.userProfile);
+router.get('/search-user', userController_1.searchUserProfile);
+router.get('/get-suggestion/:userId', connectionController_1.getUsersExceptFollowed);
+router.post('/refresh-token', userController_1.refreshTokenHandler);
+exports.default = router;
