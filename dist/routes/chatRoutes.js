@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const chatController_1 = require("../controller/chatController");
+const groupChatController_1 = require("../controller/groupChatController");
+const router = express_1.default.Router();
+router.post("/add-conversation", chatController_1.addConversation);
+router.get("/get-conversations/:userId", chatController_1.getUserConversation);
+router.get("/find-conversation/:firstUserId/:secondUserId", chatController_1.findConversationOfTwoUsers);
+router.post("/add-message", chatController_1.addMessage);
+router.get("/get-messages/:conversationId", chatController_1.getMessage);
+router.get('/get-last-messages/:conversationId', chatController_1.getLastMessage);
+router.post("/add-group", groupChatController_1.addGroup);
+router.get("/get-groups/:userId", groupChatController_1.getGroups);
+router.post("/add-group-message", groupChatController_1.addGroupMessage);
+router.get("/get-group-messages/:groupId", groupChatController_1.getGroupMessage);
+exports.default = router;

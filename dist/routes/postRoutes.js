@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const postController_1 = require("../controller/postController");
+const verifyToken_1 = require("../middleware/verifyToken");
+const commentController_1 = require("../controller/commentController");
+const router = express_1.default.Router();
+router.post('/add-post', verifyToken_1.verifyToken, postController_1.addPost);
+router.get('/get-post', verifyToken_1.verifyToken, postController_1.getPost);
+router.post('/like-post', verifyToken_1.verifyToken, postController_1.likePost);
+router.post('/update-post', postController_1.editPost);
+router.delete('/delete-post/:postId', verifyToken_1.verifyToken, postController_1.deletePost);
+router.post('/report-post', verifyToken_1.verifyToken, postController_1.reportPost);
+router.post('/save-post', verifyToken_1.verifyToken, postController_1.savedPost);
+router.get('/get-post/:userId', postController_1.userPost);
+router.get('/get-saved-post/:userId', postController_1.userSavedPost);
+router.get('/find-post/:postId', postController_1.getOnePost);
+router.post('/add-comment', commentController_1.addComment);
+router.get('/my-comment', commentController_1.myComment);
+router.get('/get-comments/:postId', commentController_1.allComments);
+router.get('/get-comments-count/:postId', commentController_1.commentsCount);
+router.post('/reply-comment', commentController_1.replyComment);
+router.post('/delete-comment', commentController_1.commentDelete);
+exports.default = router;
