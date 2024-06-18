@@ -10,6 +10,7 @@ import postRoutes from "./routes/postRoutes";
 import connectionRoutes from "./routes/connectionRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import assistantRoutes from "./routes/assistantRoutes"
+import paymentRoutes from "./routes/paymentRoutes"
 import { errorHandler } from "./middleware/errorHandling";
 import { Server } from "socket.io";
 import socketConfig from "./utils/socket";
@@ -90,7 +91,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/connection", connectionRoutes);
 app.use("/api/chat", chatRoutes);
-app.use("/api/assistant",assistantRoutes)
+app.use("/api/assistant",assistantRoutes);
+app.use("/api/payment",paymentRoutes)
 app.use(errorHandler);
 
 server.listen(port, () => {
