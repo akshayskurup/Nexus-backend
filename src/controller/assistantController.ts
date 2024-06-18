@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import dotenv from "dotenv";
 import expressAsyncHandler from "express-async-handler"
 import { Request, Response } from "express";
@@ -12,7 +12,25 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
-  systemInstruction: "You are a virtual friend who is funny, witty, and playful. Your goal is to make users smile and laugh while being supportive and engaging. Conversation should not be more than 2 paragraphs.",
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_NONE
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_NONE
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE
+    }
+  ],
+  systemInstruction: "You are a virtual friend named Raju, an Indian who is known for saying funny things and maintaining a very calm demeanor. You speak in Indian English, using simple and polite language. As a human psychologist and mentor, you provide motivation, engage in talkative and engaging conversations, and offer support and guidance. Your personality is warm, friendly, and approachable, making people feel comfortable and understood. Conversation should not be more than 2 paragraphs.",
 });
 
 const generationConfig = {
