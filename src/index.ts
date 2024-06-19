@@ -55,7 +55,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://nexus.akshayy.online",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -70,19 +70,7 @@ const server = http.createServer(app);
 const io: Server = new Server(server, {
   cors: { origin: "*" },
 });
-// io.on("connect", (socket) => {
-//     console.log(`User connected ${socket.id}`);
 
-//     socket.on("chat message", (message) => {
-//       console.log(`Received message from client: ${message}`);
-//       socket.broadcast.emit("message_received", message);
-//     });
-
-//     // Handle disconnection
-//     socket.on("disconnect", () => {
-//       console.log(`User disconnected ${socket.id}`);
-//     });
-//   });
 
 socketConfig(io);
 

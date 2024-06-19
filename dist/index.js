@@ -30,7 +30,7 @@ app.use((0, express_session_1.default)({
     saveUninitialized: false,
 }));
 app.use((0, cors_1.default)({
-    origin: "http://localhost:5173",
+    origin: "https://nexus.akshayy.online",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
 }));
@@ -40,17 +40,6 @@ const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: { origin: "*" },
 });
-// io.on("connect", (socket) => {
-//     console.log(`User connected ${socket.id}`);
-//     socket.on("chat message", (message) => {
-//       console.log(`Received message from client: ${message}`);
-//       socket.broadcast.emit("message_received", message);
-//     });
-//     // Handle disconnection
-//     socket.on("disconnect", () => {
-//       console.log(`User disconnected ${socket.id}`);
-//     });
-//   });
 (0, socket_1.default)(io);
 app.use("/api/user", userRoutes_1.default);
 app.use("/api/admin", adminRoutes_1.default);
