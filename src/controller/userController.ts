@@ -169,7 +169,7 @@ export const login = expressAsyncHandler(async(req:Request,res:Response)=>{
     }
 
     const accessToken = generateToken(user?._id, "user");
-    const refreshToken = jwt.sign({ userId: user?._id, role:"user" }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '5d' });
+    const refreshToken = jwt.sign({ userId: user?._id, role:"user" }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '30d' });
 
     res.status(200).json({message:"Login Successful",
     _id: user.id,
@@ -309,7 +309,7 @@ export const refreshTokenHandler = expressAsyncHandler(async(req:Request,res:Res
         const userId = decoded.userId;
         // const user = await getUserDetails(userId);
         // Generate new access token based on user role
-        const accessToken = generateToken(userId, "user");
+        const accessToken = await generateToken(userId, "user");
         res.status(200).json({ accessToken });
 });
 

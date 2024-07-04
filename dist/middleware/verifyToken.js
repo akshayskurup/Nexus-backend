@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,37 +31,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorizeRole = exports.verifyToken = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const userHelper_1 = require("../helpers/userHelper");
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authorizationHeader = req.headers['authorization'];
-    console.log("Chceking");
+    console.log("Checking");
     if (!authorizationHeader) {
-        res.status(400);
-        throw new Error("No token provided");
+        return res.status(400).json({ message: "No token provided" });
     }
     const token = authorizationHeader.split(' ')[1];
     jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET, (err, decoded) => __awaiter(void 0, void 0, void 0, function* () {
         if (err) {
-            console.log(err);
-            res.status(400);
-            throw new Error("Failed to authenticate token");
+            if (err instanceof jsonwebtoken_1.TokenExpiredError) {
+                console.log("Token expired");
+                return res.status(401).json({ message: "Token expired" });
+            }
+            else {
+                console.log(err);
+                return res.status(500).json({ message: "Failed to authenticate token" });
+            }
         }
         if (!decoded || !decoded.role) {
-            res.status(400);
-            throw new Error('Invalid token structure or missing role information');
+            return res.status(400).json({ message: 'Invalid token structure or missing role information' });
         }
         req.user = decoded;
         console.log("req.user", req.user);
         const user = yield (0, userHelper_1.findById)(decoded.userId);
         if (user === null || user === void 0 ? void 0 : user.isBlocked) {
-            // res.status(400);
-            // throw new Error('User is Blocked' );
             return res.status(400).json({ message: "User is blocked" });
         }
         next();
@@ -48,27 +69,8 @@ exports.verifyToken = verifyToken;
 // authorizeRole middleware
 const authorizeRole = (requiredRole) => (req, res, next) => {
     if (!req.user || !req.user.role || !req.user.role.includes(requiredRole)) {
-        res.status(400);
-        throw new Error('Insufficient permissions to access this resource');
+        return res.status(403).json({ message: 'Insufficient permissions to access this resource' });
     }
     next();
 };
 exports.authorizeRole = authorizeRole;
-// // Endpoint for token refreshing
-// export const refreshAccessToken = (req: Request, res: Response) => {
-//   const authorizationHeader = req.headers['authorization'];
-//   if (!authorizationHeader) {
-//     res.status(400)
-//     throw new Error("No token provided");
-//   }
-//   const refreshToken = authorizationHeader.split(' ')[1];
-//   // Verify the refresh token
-//   try {
-//     const decoded = jwt.verify(refreshToken,  process.env.JWT_SECRET as string) as UserPayload;
-//     const accessToken = jwt.sign({ userId: decoded.userId, role: decoded.role },  process.env.JWT_SECRET as string, { expiresIn: '1hr' });
-//     res.status(200).json({ message:"Token "accessToken });
-//   } catch (error) {
-//     res.status(400)
-//     throw new Error("Invalid refresh token");
-//   }
-// };

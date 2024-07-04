@@ -166,7 +166,7 @@ exports.login = (0, express_async_handler_1.default)((req, res) => __awaiter(voi
         throw new Error('Invalid password');
     }
     const accessToken = (0, generateToken_1.generateToken)(user === null || user === void 0 ? void 0 : user._id, "user");
-    const refreshToken = jsonwebtoken_1.default.sign({ userId: user === null || user === void 0 ? void 0 : user._id, role: "user" }, process.env.JWT_REFRESH_SECRET, { expiresIn: '5d' });
+    const refreshToken = jsonwebtoken_1.default.sign({ userId: user === null || user === void 0 ? void 0 : user._id, role: "user" }, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
     res.status(200).json({ message: "Login Successful",
         _id: user.id,
         userName: user.userName,
@@ -287,6 +287,6 @@ exports.refreshTokenHandler = (0, express_async_handler_1.default)((req, res) =>
     const userId = decoded.userId;
     // const user = await getUserDetails(userId);
     // Generate new access token based on user role
-    const accessToken = (0, generateToken_1.generateToken)(userId, "user");
+    const accessToken = yield (0, generateToken_1.generateToken)(userId, "user");
     res.status(200).json({ accessToken });
 }));

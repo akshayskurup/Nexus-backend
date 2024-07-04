@@ -11,7 +11,7 @@ const generateToken = (userId, role) => {
         userId: stringUserId,
         role
     };
-    const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, { expiresIn: '5d' });
+    const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
     return token;
 };
 exports.generateToken = generateToken;
